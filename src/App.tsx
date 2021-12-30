@@ -1,38 +1,35 @@
 import styled from "styled-components";
-import * as color from "./color";
+import { Column } from "./components/Column";
+import { Header as _Header } from "./components/Header";
 
 function App() {
   return (
     <Container>
-      <Header>
-        <div>カンバン</div>
-        <CardFilter placeholder="Filter cards" />
-      </Header>
+      <Header></Header>
       <MainArea>
         <HorizontalScroll>
-          <Column>
-            <ColumnHeader>TODO</ColumnHeader>
+          <Column
+            title="TODO"
+            cards={[
+              { id: "a", text: "朝食をとる🍞" },
+              { id: "b", text: "SNSをチェックする🐦" },
+              { id: "c", text: "布団に入る (:3[___]" },
+            ]}
+          ></Column>
+          <Column
+            title="Doing"
+            cards={[
+              { id: "d", text: "顔を洗う👐" },
+              { id: "e", text: "歯を磨く🦷" },
+            ]}
+          ></Column>
 
-            <Card>朝食をとる🍞</Card>
-            <Card>SNSをチェックする🐦</Card>
-            <Card>布団に入る (:3[___]</Card>
-          </Column>
-          <Column>
-            <ColumnHeader>Doing</ColumnHeader>
+          <Column title="Waiting" cards={[]}></Column>
 
-            <Card>顔を洗う👐</Card>
-            <Card>歯を磨く🦷</Card>
-          </Column>
-
-          <Column>
-            <ColumnHeader>Waiting</ColumnHeader>
-          </Column>
-
-          <Column>
-            <ColumnHeader>Done</ColumnHeader>
-
-            <Card></Card>
-          </Column>
+          <Column
+            title="Done"
+            cards={[{ id: "f", text: "布団から出る (:3っ)っ -=三[＿＿]" }]}
+          ></Column>
         </HorizontalScroll>
       </MainArea>
     </Container>
@@ -46,28 +43,8 @@ const Container = styled.div`
   height: 100%;
 `;
 
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
-  background-color: ${color.Navy};
-  flex-shrink: 0;
-  color: ${color.Silver};
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const Logo = styled.div``;
-
-const CardFilter = styled.input`
-  min-width: 300px;
-  border: solid 1px ${color.Silver};
-  border-radius: 3px;
-`;
-
 const MainArea = styled.div`
-  height: 100%;
+  height: 100vh;
   padding: 16px 0;
   overflow-y: auto;
 `;
@@ -90,31 +67,8 @@ const HorizontalScroll = styled.div`
   }
 `;
 
-const Column = styled.div`
-  display: flex;
-  flex-flow: column;
-  width: 355px;
-  height: 100%;
-  border: solid 1px ${color.Silver};
-  border-radius: 6px;
-  background-color: ${color.LightSilver};
-  padding: 1rem;
-`;
-
-const ColumnHeader = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
-const Card = styled.div`
-  position: relative;
-  border: solid 1px ${color.Silver};
-  border-radius: 6px;
-  box-shadow: 0 1px 3px hsla(0, 0%, 7%, 0.1);
-  padding: 8px 32px;
-  background-color: ${color.White};
-  cursor: move;
+const Header = styled(_Header)`
+  flex-shrink: 0;
 `;
 
 export default App;
