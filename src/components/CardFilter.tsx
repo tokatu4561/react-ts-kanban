@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import * as color from "../color";
 import { SearchIcon as _SearchIcon } from "./Icon";
@@ -25,6 +25,14 @@ export function CardFilter(props: Props) {
     </Container>
   );
 }
+
+type DropProps = {
+  disabled: boolean;
+  onDrop: () => void;
+  children: React.ReactChild;
+  className: string;
+  style: React.CSSProperties;
+};
 
 const Container = styled.label`
   display: flex;

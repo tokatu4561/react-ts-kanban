@@ -1,21 +1,120 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components";
 import * as color from "../color";
 import { CheckIcon as _CheckIcon, TrashIcon } from "./Icon";
 
 type Props = {
   children?: string;
+  onDragStart: () => void;
+  onDragEnd: () => void;
 };
 
 export function Card(props: Props) {
-  const { children } = props;
+  const { children, onDragStart, onDragEnd } = props;
+
+  const [drag, setDrag] = useState(false);
   return (
-    <Container>
+    <Container
+      style={{ opacity: drag ? 0.5 : undefined }}
+      onDragStart={() => {
+        onDragStart?.();
+        setDrag(true);
+      }}
+      onDragEnd={() => {
+        onDragEnd();
+        setDrag(false);
+      }}
+    >
       <_CheckIcon></_CheckIcon>
       <Text>{children}</Text>
       <DeleteButton />
     </Container>
   );
+}
+
+type DropProps = {
+  disabled?: boolean;
+  onDrop?(): void;
+  children?: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+export function DropArea({
+  disabled,
+  onDrop,
+  children,
+  className,
+  style,
+}: DropProps) {
+  const [isTarget, setIsTarget] = useState(false);
+  const visible = !disabled && isTarget;
+
+  const [dragOver, onDragOver] = useDragAutoLeave();
+
+  return (
+    <DropAreaContainer
+      style={style}
+      className={className}
+      onDragOver={(ev) => {
+        if (disabled) return;
+
+        ev.preventDefault();
+        onDragOver(() => setIsTarget(false));
+      }}
+      onDragEnter={() => {
+        if (disabled || dragOver.current) return;
+
+        setIsTarget(true);
+      }}
+      onDrop={() => {
+        if (disabled) return;
+
+        setIsTarget(false);
+        onDrop?.();
+      }}
+    >
+      <DropAreaIndicator
+        style={{
+          height: !visible ? 0 : undefined,
+          borderWidth: !visible ? 0 : undefined,
+        }}
+      />
+
+      {children}
+    </DropAreaContainer>
+  );
+}
+
+/**
+ * dragOver イベントが継続中かどうかのフラグを ref として返す
+ *
+ * timeout 経過後に自動でフラグが false になる
+ *
+ * @param timeout 自動でフラグを false にするまでの時間 (ms)
+ */
+function useDragAutoLeave(timeout: number = 100) {
+  const dragOver = useRef(false);
+  const timer = useRef(0);
+
+  const array = [
+    dragOver,
+
+    /**
+     * @param onDragLeave フラグが false になるときに呼ぶコールバック
+     */
+    (onDragLeave?: () => void) => {
+      clearTimeout(timer.current);
+
+      dragOver.current = true;
+      timer.current = window.setTimeout(() => {
+        dragOver.current = false;
+        onDragLeave?.();
+      }, timeout);
+    },
+  ] as const;
+
+  return array;
 }
 
 const Container = styled.div`
@@ -48,4 +147,17 @@ const DeleteButton = styled.button.attrs({
   :hover {
     color: ${color.Red};
   }
+`;
+
+const DropAreaContainer = styled.div`
+  > :not(:first-child) {
+    margin-top: 8px;
+  }
+`;
+
+const DropAreaIndicator = styled.div`
+  height: 40px;
+  border: dashed 3px ${color.Gray};
+  border-radius: 6px;
+  transition: all 50ms ease-out;
 `;

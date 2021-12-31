@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import * as color from "../color";
-import { Card } from "./Card";
+import { Card, DropArea } from "./Card";
 import { PlusIcon } from "./Icon";
 import { InputForm } from "./InputForm";
 
@@ -12,12 +12,21 @@ type Props = {
     id: string;
     text?: string;
   }[];
+  onCardDragStart: (id: string) => void;
+  onCardDrop?: (entered: string | null) => void;
 };
 
 export function Column(props: Props) {
-  const { title, cards: NonFiltercards, filterValue } = props;
+  const {
+    title,
+    cards: NonFiltercards,
+    filterValue,
+    onCardDragStart,
+    onCardDrop,
+  } = props;
   const totalCount = NonFiltercards.length;
 
+  //検索
   const filterVal = filterValue?.trim();
   //   検索する文字を１文字づつの配列にする
   const keywords = filterVal?.toLowerCase().split(/\s+/g) ?? [];
@@ -30,6 +39,13 @@ export function Column(props: Props) {
   const toggleInput = () => setInputMode((prev) => !prev);
   const confirmInput = () => setInputMode(false);
   const cancelInput = () => setInputMode(false);
+
+  const [draggingCardID, setDraggingCardID] =
+    useState<string | undefined>(undefined);
+  const handleCardDragStart = (id: string) => {
+    setDraggingCardID(id);
+    onCardDragStart(id);
+  };
 
   return (
     <Container>
@@ -52,8 +68,19 @@ export function Column(props: Props) {
 
       <VerticalScroll>
         {cards.map(({ id, text }) => (
-          <Card key={id}>{text}</Card>
+          <DropArea key={id} onDrop={() => onCardDrop?.(id)}>
+            <Card
+              onDragStart={() => handleCardDragStart(id)}
+              onDragEnd={() => setDraggingCardID(undefined)}
+            >
+              {text}
+            </Card>
+          </DropArea>
         ))}
+        <DropArea
+          onDrop={() => onCardDrop?.(null)}
+          style={{ height: "100%" }}
+        />
       </VerticalScroll>
     </Container>
   );
