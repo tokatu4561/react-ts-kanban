@@ -1,15 +1,22 @@
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Column } from "./components/Column";
 import { Header as _Header } from "./components/Header";
 
 function App() {
+  const [filterValue, setFilterValue] = useState("");
+
   return (
     <Container>
-      <Header></Header>
+      <Header
+        filterValue={filterValue}
+        onFilterChange={setFilterValue}
+      ></Header>
       <MainArea>
         <HorizontalScroll>
           <Column
             title="TODO"
+            filterValue={filterValue}
             cards={[
               { id: "a", text: "朝食をとる🍞" },
               { id: "b", text: "SNSをチェックする🐦" },

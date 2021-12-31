@@ -3,12 +3,19 @@ import styled from "styled-components";
 import * as color from "../color";
 import { CardFilter } from "./CardFilter";
 
-export function Header({ className }: { className?: string }) {
+type Props = {
+  filterValue: string;
+  onFilterChange: any;
+  className?: string;
+};
+
+export function Header(props: Props) {
+  const { filterValue, className, onFilterChange } = props;
   return (
     <Container className={className}>
       <Logo>カンバン　Practice</Logo>
 
-      <CardFilter />
+      <CardFilter value={filterValue} onChange={onFilterChange} />
     </Container>
   );
 }
